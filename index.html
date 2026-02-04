@@ -31,6 +31,40 @@
             margin: 0;
             padding: 0;
         }
+        /* Billing Statement Styles */
+.statement-header {
+    border-bottom: 2px solid #4361ee;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.statement-summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.statement-item {
+    border-bottom: 1px solid #e9ecef;
+    padding: 10px 0;
+}
+
+.statement-item:last-child {
+    border-bottom: none;
+}
+
+/* Print styles for statements */
+@media print {
+    .statement-print {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
         
         .main-container {
             background: white;
@@ -1368,6 +1402,144 @@
                             </div>
                         </div>
                     </div>
+                    <!-- In sidebar nav -->
+<a class="nav-link" data-section="billing">
+    <i class="fas fa-file-invoice-dollar"></i>
+    <span>Billing Statements</span>
+</a>
+                    <!-- Billing Statements Section -->
+<div id="billingSection" class="section-content">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h4 class="mb-0">Billing Statements</h4>
+            <p class="text-muted">Generate and manage billing statements</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-success" onclick="generateDailyStatement()">
+                <i class="fas fa-plus me-2"></i> Generate Daily Statement
+            </button>
+            <button class="btn btn-primary" onclick="showStatementFilters()">
+                <i class="fas fa-filter me-2"></i> Filter Statements
+            </button>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <div class="dashboard-card">
+            <h5>Quick Statement Generation</h5>
+            <div class="mt-3">
+                <button class="btn btn-outline-primary w-100 mb-2" onclick="generateStatement('today')">
+                    <i class="fas fa-sun me-2"></i> Today's Statement
+                </button>
+                <button class="btn btn-outline-success w-100 mb-2" onclick="generateStatement('yesterday')">
+                    <i class="fas fa-calendar-day me-2"></i> Yesterday's Statement
+                </button>
+                <button class="btn btn-outline-info w-100 mb-2" onclick="generateStatement('week')">
+                    <i class="fas fa-calendar-week me-2"></i> This Week's Statement
+                </button>
+                <button class="btn btn-outline-warning w-100" onclick="generateStatement('month')">
+                    <i class="fas fa-calendar-alt me-2"></i> This Month's Statement
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h5>Statement Statistics</h5>
+            <div class="mt-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Total Statements:</span>
+                    <strong id="totalStatements">0</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Total Billed Amount:</span>
+                    <strong id="totalBilledAmount">$0.00</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Paid Amount:</span>
+                    <strong class="text-success" id="paidAmount">$0.00</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Pending Amount:</span>
+                    <strong class="text-warning" id="pendingAmount">$0.00</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-card mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Recent Statements</h5>
+            <div class="d-flex gap-2">
+                <div class="input-group" style="max-width: 300px;">
+                    <input type="text" class="form-control" id="searchStatements" placeholder="Search statements...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover" id="statementsTable">
+                <thead>
+                    <tr>
+                        <th>Statement #</th>
+                        <th>Period</th>
+                        <th>Customer</th>
+                        <th>Orders</th>
+                        <th>Total Amount</th>
+                        <th>Paid Amount</th>
+                        <th>Status</th>
+                        <th>Generated On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="statementsTableBody">
+                    <!-- Statements will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <h5>Export Options</h5>
+                <div class="mt-3">
+                    <button class="btn btn-primary w-100 mb-2" onclick="exportStatementPDF()">
+                        <i class="fas fa-file-pdf me-2"></i> Export as PDF
+                    </button>
+                    <button class="btn btn-success w-100 mb-2" onclick="exportStatementExcel()">
+                        <i class="fas fa-file-excel me-2"></i> Export as Excel
+                    </button>
+                    <button class="btn btn-info w-100" onclick="printStatement()">
+                        <i class="fas fa-print me-2"></i> Print Statement
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="dashboard-card">
+                <h5>Customer-wise Statements</h5>
+                <div class="mt-3">
+                    <div class="input-group mb-3">
+                        <select class="form-select" id="customerSelectStatement">
+                            <option value="">Select Customer</option>
+                            <!-- Customers will be populated here -->
+                        </select>
+                        <button class="btn btn-primary" onclick="generateCustomerStatement()">
+                            Generate Statement
+                        </button>
+                    </div>
+                    <div id="customerStatementSummary">
+                        <!-- Customer statement summary will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                     
                     <!-- Settings Section -->
                     <div id="settingsSection" class="section-content">
@@ -4388,6 +4560,697 @@
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+        // ========== BILLING STATEMENT FUNCTIONS ==========
+let billingStatements = [];
+
+function loadBillingSection() {
+    loadStatementsTable();
+    loadStatementStatistics();
+    loadCustomerSelect();
+}
+
+function loadStatementsTable() {
+    const container = document.getElementById('statementsTableBody');
+    if (!container) return;
+    
+    // Load statements from localStorage or initialize
+    const savedStatements = localStorage.getItem('restaurantOSStatements');
+    if (savedStatements) {
+        billingStatements = JSON.parse(savedStatements);
+    } else {
+        billingStatements = generateDemoStatements();
+        saveStatements();
+    }
+    
+    if (billingStatements.length === 0) {
+        container.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-4">
+                    <i class="fas fa-file-invoice-dollar fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">No statements generated yet</p>
+                    <button class="btn btn-primary mt-2" onclick="generateDailyStatement()">
+                        Generate First Statement
+                    </button>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    let html = '';
+    billingStatements.slice(0, 10).forEach(statement => {
+        const statusBadge = getStatementStatusBadge(statement.status);
+        const generatedDate = new Date(statement.generatedOn).toLocaleDateString();
+        
+        html += `
+            <tr>
+                <td><strong>${statement.id}</strong></td>
+                <td>${statement.period}</td>
+                <td>${statement.customerName || 'All Customers'}</td>
+                <td>${statement.totalOrders}</td>
+                <td><strong>${restaurant.settings.currency}${statement.totalAmount.toFixed(2)}</strong></td>
+                <td><strong>${restaurant.settings.currency}${statement.paidAmount.toFixed(2)}</strong></td>
+                <td><span class="badge ${statusBadge}">${statement.status}</span></td>
+                <td>${generatedDate}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-info" onclick="viewStatement('${statement.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-primary" onclick="printStatementById('${statement.id}')">
+                            <i class="fas fa-print"></i>
+                        </button>
+                        <button class="btn btn-success" onclick="emailStatement('${statement.id}')">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function loadStatementStatistics() {
+    const totalAmount = billingStatements.reduce((sum, stmt) => sum + stmt.totalAmount, 0);
+    const paidAmount = billingStatements.reduce((sum, stmt) => sum + stmt.paidAmount, 0);
+    const pendingAmount = totalAmount - paidAmount;
+    
+    document.getElementById('totalStatements').textContent = billingStatements.length;
+    document.getElementById('totalBilledAmount').textContent = `${restaurant.settings.currency}${totalAmount.toFixed(2)}`;
+    document.getElementById('paidAmount').textContent = `${restaurant.settings.currency}${paidAmount.toFixed(2)}`;
+    document.getElementById('pendingAmount').textContent = `${restaurant.settings.currency}${pendingAmount.toFixed(2)}`;
+}
+
+function generateDemoStatements() {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    return [
+        {
+            id: 'STMT-001',
+            period: 'Daily',
+            startDate: yesterday.toISOString().split('T')[0],
+            endDate: yesterday.toISOString().split('T')[0],
+            customerId: null,
+            customerName: null,
+            totalOrders: 5,
+            totalAmount: 245.75,
+            paidAmount: 245.75,
+            pendingAmount: 0,
+            status: 'paid',
+            generatedOn: yesterday.toISOString(),
+            items: [
+                { orderNumber: 'ORD-001', amount: 45.50, status: 'paid' },
+                { orderNumber: 'ORD-002', amount: 32.75, status: 'paid' },
+                { orderNumber: 'ORD-003', amount: 67.25, status: 'paid' },
+                { orderNumber: 'ORD-004', amount: 55.00, status: 'paid' },
+                { orderNumber: 'ORD-005', amount: 45.25, status: 'paid' }
+            ]
+        },
+        {
+            id: 'STMT-002',
+            period: 'Daily',
+            startDate: today.toISOString().split('T')[0],
+            endDate: today.toISOString().split('T')[0],
+            customerId: null,
+            customerName: null,
+            totalOrders: 3,
+            totalAmount: 156.80,
+            paidAmount: 100.00,
+            pendingAmount: 56.80,
+            status: 'partial',
+            generatedOn: today.toISOString(),
+            items: [
+                { orderNumber: 'ORD-006', amount: 45.50, status: 'paid' },
+                { orderNumber: 'ORD-007', amount: 67.30, status: 'paid' },
+                { orderNumber: 'ORD-008', amount: 44.00, status: 'pending' }
+            ]
+        }
+    ];
+}
+
+function getStatementStatusBadge(status) {
+    switch(status) {
+        case 'paid': return 'bg-success';
+        case 'partial': return 'bg-warning';
+        case 'pending': return 'bg-info';
+        case 'overdue': return 'bg-danger';
+        default: return 'bg-secondary';
+    }
+}
+
+function generateDailyStatement() {
+    const today = new Date();
+    const todayOrders = getTodayOrders();
+    
+    if (todayOrders.length === 0) {
+        showToast('No orders found for today', 'info');
+        return;
+    }
+    
+    const totalAmount = todayOrders.reduce((sum, order) => sum + order.total, 0);
+    const paidAmount = todayOrders
+        .filter(order => order.paymentStatus === 'paid')
+        .reduce((sum, order) => sum + order.total, 0);
+    const pendingAmount = totalAmount - paidAmount;
+    
+    const newStatement = {
+        id: `STMT-${String(billingStatements.length + 1).padStart(4, '0')}`,
+        period: 'Daily',
+        startDate: today.toISOString().split('T')[0],
+        endDate: today.toISOString().split('T')[0],
+        customerId: null,
+        customerName: null,
+        totalOrders: todayOrders.length,
+        totalAmount: totalAmount,
+        paidAmount: paidAmount,
+        pendingAmount: pendingAmount,
+        status: pendingAmount === 0 ? 'paid' : (paidAmount > 0 ? 'partial' : 'pending'),
+        generatedOn: today.toISOString(),
+        items: todayOrders.map(order => ({
+            orderNumber: order.orderNumber,
+            amount: order.total,
+            status: order.paymentStatus,
+            customerName: order.customerName,
+            createdAt: order.createdAt
+        }))
+    };
+    
+    billingStatements.push(newStatement);
+    saveStatements();
+    loadStatementsTable();
+    loadStatementStatistics();
+    
+    // Show statement
+    viewStatement(newStatement.id);
+    
+    showToast('Daily statement generated successfully!', 'success');
+}
+
+function generateStatement(period) {
+    const today = new Date();
+    let startDate, endDate, periodName;
+    
+    switch(period) {
+        case 'today':
+            startDate = new Date(today);
+            endDate = new Date(today);
+            periodName = 'Today';
+            break;
+        case 'yesterday':
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            startDate = yesterday;
+            endDate = yesterday;
+            periodName = 'Yesterday';
+            break;
+        case 'week':
+            const weekStart = new Date(today);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            startDate = weekStart;
+            endDate = new Date(today);
+            periodName = 'This Week';
+            break;
+        case 'month':
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            startDate = monthStart;
+            endDate = new Date(today);
+            periodName = 'This Month';
+            break;
+        default:
+            return;
+    }
+    
+    const orders = restaurant.orders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= startDate && orderDate <= endDate;
+    });
+    
+    if (orders.length === 0) {
+        showToast(`No orders found for ${periodName.toLowerCase()}`, 'info');
+        return;
+    }
+    
+    const totalAmount = orders.reduce((sum, order) => sum + order.total, 0);
+    const paidAmount = orders
+        .filter(order => order.paymentStatus === 'paid')
+        .reduce((sum, order) => sum + order.total, 0);
+    const pendingAmount = totalAmount - paidAmount;
+    
+    const newStatement = {
+        id: `STMT-${String(billingStatements.length + 1).padStart(4, '0')}`,
+        period: periodName,
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        customerId: null,
+        customerName: null,
+        totalOrders: orders.length,
+        totalAmount: totalAmount,
+        paidAmount: paidAmount,
+        pendingAmount: pendingAmount,
+        status: pendingAmount === 0 ? 'paid' : (paidAmount > 0 ? 'partial' : 'pending'),
+        generatedOn: today.toISOString(),
+        items: orders.map(order => ({
+            orderNumber: order.orderNumber,
+            amount: order.total,
+            status: order.paymentStatus,
+            customerName: order.customerName,
+            createdAt: order.createdAt
+        }))
+    };
+    
+    billingStatements.push(newStatement);
+    saveStatements();
+    loadStatementsTable();
+    loadStatementStatistics();
+    
+    showToast(`${periodName} statement generated successfully!`, 'success');
+}
+
+function viewStatement(statementId) {
+    const statement = billingStatements.find(s => s.id === statementId);
+    if (!statement) return;
+    
+    let itemsHtml = '';
+    statement.items.forEach(item => {
+        const date = new Date(item.createdAt).toLocaleDateString();
+        const statusBadge = item.status === 'paid' ? 'bg-success' : 'bg-warning';
+        
+        itemsHtml += `
+            <tr>
+                <td>${item.orderNumber}</td>
+                <td>${item.customerName || 'Walk-in'}</td>
+                <td>${date}</td>
+                <td>${restaurant.settings.currency}${item.amount.toFixed(2)}</td>
+                <td><span class="badge ${statusBadge}">${item.status}</span></td>
+            </tr>
+        `;
+    });
+    
+    const modalContent = document.getElementById('statementDetailsContent');
+    modalContent.innerHTML = `
+        <div class="statement-header text-center mb-4">
+            <h4>${restaurant.settings.restaurantName}</h4>
+            <h5>BILLING STATEMENT</h5>
+            <p class="text-muted">${statement.id}</p>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6>Statement Details</h6>
+                <p><strong>Statement #:</strong> ${statement.id}</p>
+                <p><strong>Period:</strong> ${statement.period}</p>
+                <p><strong>From:</strong> ${statement.startDate}</p>
+                <p><strong>To:</strong> ${statement.endDate}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Summary</h6>
+                <p><strong>Generated On:</strong> ${new Date(statement.generatedOn).toLocaleDateString()}</p>
+                <p><strong>Total Orders:</strong> ${statement.totalOrders}</p>
+                <p><strong>Status:</strong> <span class="badge ${getStatementStatusBadge(statement.status)}">${statement.status}</span></p>
+            </div>
+        </div>
+        
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="statement-summary border-top pt-3">
+            <div class="row">
+                <div class="col-md-6 offset-md-6">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Amount:</span>
+                        <strong>${restaurant.settings.currency}${statement.totalAmount.toFixed(2)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Paid Amount:</span>
+                        <strong class="text-success">${restaurant.settings.currency}${statement.paidAmount.toFixed(2)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Pending Amount:</span>
+                        <strong class="text-warning">${restaurant.settings.currency}${statement.pendingAmount.toFixed(2)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2">
+                        <span>Balance:</span>
+                        <span class="${statement.pendingAmount > 0 ? 'text-danger' : 'text-success'}">
+                            ${statement.pendingAmount > 0 ? '-' : ''}${restaurant.settings.currency}${statement.pendingAmount.toFixed(2)}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Payment Terms</h6>
+                    <p class="text-muted">Please settle all pending amounts within 7 days</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p><strong>Authorized Signature:</strong></p>
+                    <p class="border-top pt-2" style="min-height: 50px;"></p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('statementDetailsModal').classList.add('active');
+}
+
+function closeStatementModal() {
+    document.getElementById('statementDetailsModal').classList.remove('active');
+}
+
+function loadCustomerSelect() {
+    const select = document.getElementById('customerSelectStatement');
+    if (!select) return;
+    
+    let html = '<option value="">Select Customer</option>';
+    restaurant.customers.forEach(customer => {
+        html += `<option value="${customer.id}">${customer.name} (${customer.phone})</option>`;
+    });
+    
+    select.innerHTML = html;
+}
+
+function generateCustomerStatement() {
+    const customerId = document.getElementById('customerSelectStatement').value;
+    if (!customerId) {
+        showToast('Please select a customer', 'error');
+        return;
+    }
+    
+    const customer = restaurant.customers.find(c => c.id === parseInt(customerId));
+    if (!customer) return;
+    
+    const customerOrders = restaurant.orders.filter(order => 
+        order.customerPhone === customer.phone
+    );
+    
+    if (customerOrders.length === 0) {
+        showToast('No orders found for this customer', 'info');
+        return;
+    }
+    
+    const totalAmount = customerOrders.reduce((sum, order) => sum + order.total, 0);
+    const paidAmount = customerOrders
+        .filter(order => order.paymentStatus === 'paid')
+        .reduce((sum, order) => sum + order.total, 0);
+    const pendingAmount = totalAmount - paidAmount;
+    
+    const newStatement = {
+        id: `STMT-CUST-${String(billingStatements.length + 1).padStart(4, '0')}`,
+        period: 'Customer Statement',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date().toISOString().split('T')[0],
+        customerId: customer.id,
+        customerName: customer.name,
+        totalOrders: customerOrders.length,
+        totalAmount: totalAmount,
+        paidAmount: paidAmount,
+        pendingAmount: pendingAmount,
+        status: pendingAmount === 0 ? 'paid' : (paidAmount > 0 ? 'partial' : 'pending'),
+        generatedOn: new Date().toISOString(),
+        items: customerOrders.map(order => ({
+            orderNumber: order.orderNumber,
+            amount: order.total,
+            status: order.paymentStatus,
+            customerName: order.customerName,
+            createdAt: order.createdAt
+        }))
+    };
+    
+    billingStatements.push(newStatement);
+    saveStatements();
+    loadStatementsTable();
+    loadStatementStatistics();
+    
+    // Show summary
+    const summaryDiv = document.getElementById('customerStatementSummary');
+    summaryDiv.innerHTML = `
+        <div class="alert alert-success">
+            <h6>Statement Generated for ${customer.name}</h6>
+            <p><strong>Total Orders:</strong> ${customerOrders.length}</p>
+            <p><strong>Total Amount:</strong> ${restaurant.settings.currency}${totalAmount.toFixed(2)}</p>
+            <p><strong>Paid Amount:</strong> ${restaurant.settings.currency}${paidAmount.toFixed(2)}</p>
+            <p><strong>Pending Amount:</strong> ${restaurant.settings.currency}${pendingAmount.toFixed(2)}</p>
+            <button class="btn btn-sm btn-primary mt-2" onclick="viewStatement('${newStatement.id}')">
+                View Statement
+            </button>
+        </div>
+    `;
+    
+    showToast(`Statement generated for ${customer.name}`, 'success');
+}
+
+function showStatementFilters() {
+    document.getElementById('statementFiltersModal').classList.add('active');
+}
+
+function closeStatementFiltersModal() {
+    document.getElementById('statementFiltersModal').classList.remove('active');
+}
+
+function applyStatementFilters() {
+    const startDate = document.getElementById('filterStartDate').value;
+    const endDate = document.getElementById('filterEndDate').value;
+    const customerId = document.getElementById('filterCustomer').value;
+    const status = document.getElementById('filterStatus').value;
+    
+    // Implement filter logic here
+    closeStatementFiltersModal();
+    showToast('Filters applied successfully', 'success');
+}
+
+function exportStatementPDF() {
+    // This would generate a PDF of the statement
+    showToast('PDF export feature coming soon!', 'info');
+}
+
+function exportStatementExcel() {
+    // This would generate an Excel file
+    showToast('Excel export feature coming soon!', 'info');
+}
+
+function printStatement() {
+    // This would print the current statement
+    showToast('Print statement feature coming soon!', 'info');
+}
+
+function printStatementById(statementId) {
+    const statement = billingStatements.find(s => s.id === statementId);
+    if (!statement) return;
+    
+    let receipt = `
+        ${restaurant.settings.restaurantName}
+        =================================
+        BILLING STATEMENT
+        Statement #: ${statement.id}
+        Period: ${statement.period}
+        From: ${statement.startDate} To: ${statement.endDate}
+        Generated: ${new Date(statement.generatedOn).toLocaleDateString()}
+        =================================
+        
+        ORDERS SUMMARY:
+    `;
+    
+    statement.items.forEach(item => {
+        const date = new Date(item.createdAt).toLocaleDateString();
+        receipt += `
+        ${item.orderNumber} - ${item.customerName} - ${date}
+        Amount: ${restaurant.settings.currency}${item.amount.toFixed(2)} (${item.status})
+        `;
+    });
+    
+    receipt += `
+        =================================
+        SUMMARY:
+        Total Orders: ${statement.totalOrders}
+        Total Amount: ${restaurant.settings.currency}${statement.totalAmount.toFixed(2)}
+        Paid Amount: ${restaurant.settings.currency}${statement.paidAmount.toFixed(2)}
+        Pending Amount: ${restaurant.settings.currency}${statement.pendingAmount.toFixed(2)}
+        Status: ${statement.status}
+        =================================
+        
+        Balance: ${restaurant.settings.currency}${statement.pendingAmount.toFixed(2)}
+        
+        =================================
+        Thank you for your business!
+        =================================
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Statement ${statement.id}</title>
+            <style>
+                body { font-family: monospace; padding: 20px; }
+                pre { white-space: pre-wrap; }
+                @media print {
+                    body { margin: 0; }
+                    @page { margin: 0; }
+                }
+            </style>
+        </head>
+        <body>
+            <pre>${receipt}</pre>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 1000);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+}
+
+function printDetailedStatement() {
+    const modalContent = document.getElementById('statementDetailsContent');
+    const printContent = modalContent.innerHTML;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Detailed Statement</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                body { padding: 20px; }
+                @media print {
+                    body { margin: 0; }
+                    @page { margin: 20px; }
+                }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 1000);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+}
+
+function emailStatement(statementId) {
+    showToast('Email statement feature coming soon!', 'info');
+}
+
+function saveStatements() {
+    localStorage.setItem('restaurantOSStatements', JSON.stringify(billingStatements));
+}
+
+// Add this to the section loading function
+function loadSectionData(sectionName) {
+    switch(sectionName) {
+        // ... existing cases ...
+        case 'billing':
+            loadBillingSection();
+            break;
+        // ... rest of cases ...
+    }
+}
+
+// Add to navigation titles
+const titles = {
+    // ... existing titles ...
+    'billing': 'Billing Statements'
+    // ... rest of titles ...
+};
     </script>
+    <!-- Statement Details Modal -->
+<div class="modal-overlay" id="statementDetailsModal">
+    <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Statement Details</h5>
+            <button type="button" class="btn-close btn-close-white" onclick="closeStatementModal()"></button>
+        </div>
+        <div class="modal-body">
+            <div id="statementDetailsContent">
+                <!-- Statement details will be loaded here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="printDetailedStatement()">
+                <i class="fas fa-print me-2"></i> Print Statement
+            </button>
+            <button class="btn btn-success" onclick="sendStatementEmail()">
+                <i class="fas fa-envelope me-2"></i> Email Statement
+            </button>
+            <button class="btn btn-secondary" onclick="closeStatementModal()">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Statement Filters Modal -->
+<div class="modal-overlay" id="statementFiltersModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header bg-info text-white">
+            <h5 class="modal-title">Filter Statements</h5>
+            <button type="button" class="btn-close btn-close-white" onclick="closeStatementFiltersModal()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Date Range</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="filterStartDate" value="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="filterEndDate" value="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Customer</label>
+                <select class="form-select" id="filterCustomer">
+                    <option value="">All Customers</option>
+                    <!-- Customers will be populated here -->
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="filterStatus">
+                    <option value="">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="partial">Partial</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+            <button class="btn btn-primary w-100" onclick="applyStatementFilters()">
+                <i class="fas fa-filter me-2"></i> Apply Filters
+            </button>
+        </div>
+    </div>
+</div>
 </body>
+
 </html>
